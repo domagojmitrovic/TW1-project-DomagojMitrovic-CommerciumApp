@@ -4,11 +4,13 @@ using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers;
+
 [Route("api/stock")]
 [ApiController]
 public class StockController : ControllerBase
 {
-   private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext _context;
+
     public StockController(ApplicationDbContext context)
     {
         _context = context;
@@ -18,7 +20,7 @@ public class StockController : ControllerBase
     public IActionResult GetAll()
     {
         var stocks = _context.Stocks.ToList()
-            .Select(s=>s.ToStockDto());
+            .Select(s => s.ToStockDto());
         return Ok(stocks);
     }
 
@@ -30,6 +32,7 @@ public class StockController : ControllerBase
         {
             return NotFound();
         }
+
         return Ok(stock.ToStockDto());
     }
 
@@ -41,4 +44,28 @@ public class StockController : ControllerBase
         _context.SaveChanges();
         return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
     }
+
+    [HttpPut]
+    [Route("{id}")]
+    public IActionResult Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
+    {
+        var stockModel = _context.Stocks.FirstOrDefault(s => s.Id == id);
+
+        if (stockModel == null)
+        {
+            return NotFound();
+        }
+
+        stockModel.Symbol = updateDto.Symbol;
+        stockModel.CompanyName = updateDto.CompanyName;
+        stockModel.Dividend = updateDto.Dividend;
+        stockModel.Industry = updateDto.Industry;
+        stockModel.MarketCap = updateDto.MarketCap;
+        stockModel.Price = updateDto.Price;
+
+        _context.SaveChanges();
+        
+        return Ok(stockModel.ToStockDto());
+    }
 }
+
