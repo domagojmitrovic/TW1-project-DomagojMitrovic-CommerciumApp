@@ -32,4 +32,15 @@ public static class StockMappers
 
         };
     }
+
+    public static Stock ToStockFromUpdateRequest(Stock stock, UpdateStockRequestDto updateStockDto)
+    {
+        stock.Symbol = updateStockDto.Symbol;
+        stock.CompanyName = updateStockDto.CompanyName;
+        stock.Dividend = updateStockDto.Dividend;
+        stock.Industry = updateStockDto.Industry;
+        stock.MarketCap = updateStockDto.MarketCap;
+        stock.Price = updateStockDto.Price;
+        return stock;
+    }
 }
